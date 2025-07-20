@@ -28,42 +28,28 @@
         background-color: var(--blue);
         color: var(--white);
         font-family: monospace;
-        font-size: 16px;
+        font-size: 32px;
         line-height: 1;
         margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
       }
 
-      pre {
-        margin: 0;
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 1ch);
+        grid-template-rows: repeat(auto-fill, 1lh);
+        width: 95vw;
+        height: 95vh;
+        box-sizing: border-box;
       }
     </style>
   </head>
   <body>
-    <pre
-    >
-╔═════════════════════════════════kubascale.com═════════════════════════════════╗
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-║                                                                               ║
-╚═══════════════════════════════════════════════════════════════════════════════╝
-</pre>
+    <div class="grid-container"></div>
+    <script src="main.js" defer></script>
   </body>
 </html>
