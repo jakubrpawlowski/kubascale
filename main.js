@@ -1,14 +1,24 @@
 /**
- * @param {string} char
+ * @param {string} text
  * @param {number} row
  * @param {number} col
+ * @param {number} [zIndex]
  * @returns {HTMLDivElement}
  */
-function createCell(char, row, col) {
+function createCell(text, row, col, zIndex) {
   const cell = document.createElement("div");
-  cell.textContent = char;
+  cell.textContent = text;
   cell.style.gridRow = row.toString();
-  cell.style.gridColumn = col.toString();
+  if (text.length > 1) {
+    cell.style.gridColumn = `${col} / ${col + text.length}`;
+    cell.style.textAlign = "center";
+  } else {
+    cell.style.gridColumn = col.toString();
+  }
+  if (zIndex !== undefined) {
+    cell.style.zIndex = zIndex.toString();
+    cell.style.backgroundColor = "var(--blue)";
+  }
   return cell;
 }
 
@@ -43,20 +53,15 @@ function redrawBox() {
   // Get actual grid dimensions
   const { cols, rows } = getGridDimensions();
 
-  // Calculate the text "kubascale.com" and its position
-  const title = "kubascale.com";
-  const titleStart = Math.floor((cols - title.length) / 2);
-
-  // Top row
+  // Top row - complete border
   for (let col = 2; col < cols; col++) {
-    if (col >= titleStart && col < titleStart + title.length) {
-      container.appendChild(
-        createCell(title[col - titleStart], 1, col),
-      );
-    } else {
-      container.appendChild(createCell("═", 1, col));
-    }
+    container.appendChild(createCell("═", 1, col));
   }
+
+  // Title overlay
+  const title = "kubascale.com";
+  const titleStart = Math.floor((cols - title.length) / 2) + 1;
+  container.appendChild(createCell(title, 1, titleStart, 1));
 
   // Middle rows - just the sides
   for (let row = 2; row < rows; row++) {
