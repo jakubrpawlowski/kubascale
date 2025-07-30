@@ -94,6 +94,59 @@ function redrawBox() {
   // Re-add the content area
   if (contentAreaHTML) {
     container.insertAdjacentHTML("beforeend", contentAreaHTML);
+
+    // Add scroll listener to the newly added content area
+    const contentArea = container.querySelector(".content-area");
+    if (contentArea) {
+      contentArea.addEventListener("scroll", checkAndDrawScrollbar);
+    }
+  }
+
+  // Check if scrollbar is needed
+  checkAndDrawScrollbar();
+}
+
+/**
+ * @returns {void}
+ */
+function checkAndDrawScrollbar() {
+  const container = document.querySelector(".grid-container");
+  const contentArea = container.querySelector(".content-area");
+
+  if (!contentArea) return;
+
+  // Remove existing scrollbar elements
+  container.querySelectorAll("[data-scrollbar]").forEach((el) => el.remove());
+
+  // Check if content overflows vertically
+  const needsScrollbar = contentArea.scrollHeight > contentArea.clientHeight;
+
+  if (needsScrollbar) {
+    const { rows } = getGridDimensions();
+
+    // Draw scrollbar track on right border (excluding corners)
+    for (let row = 2; row < rows; row++) {
+      const scrollTrack = createCell("░", row, -1, 2);
+      scrollTrack.style.backgroundColor = "var(--blue)";
+      scrollTrack.setAttribute("data-scrollbar", "track");
+      container.appendChild(scrollTrack);
+    }
+
+    // Calculate scrollbar thumb position
+    const scrollableHeight = contentArea.scrollHeight -
+      contentArea.clientHeight;
+    const scrollPosition = Math.max(
+      0,
+      Math.min(1, contentArea.scrollTop / scrollableHeight),
+    );
+    const availableRows = rows - 3; // Exclude top, bottom, and the thumb itself
+    const thumbRow = Math.floor(scrollPosition * availableRows) + 2;
+
+    // Draw single scrollbar thumb
+    const scrollThumb = createCell("█", thumbRow, -1, 3);
+    scrollThumb.style.backgroundColor = "var(--blue)";
+    scrollThumb.setAttribute("data-scrollbar", "thumb");
+    container.appendChild(scrollThumb);
   }
 }
 
@@ -102,3 +155,15 @@ redrawBox();
 
 // Redraw on window resize
 window.addEventListener("resize", redrawBox);
+
+// Forward wheel events from anywhere to the content area
+document.addEventListener("wheel", (event) => {
+  const contentArea = document.querySelector(".content-area");
+  if (
+    contentArea && event.target instanceof Node &&
+    !contentArea.contains(event.target)
+  ) {
+    event.preventDefault();
+    contentArea.scrollTop += event.deltaY;
+  }
+});
